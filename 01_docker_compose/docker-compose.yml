@@ -6,8 +6,6 @@ services:
     volumes:
       - ./app/:/usr/src/app/
       - static_volume:/usr/src/app/staticfiles
-    ports:
-      - 8000:8000
     env_file:
       - ./app/config/.env
     depends_on:
@@ -17,17 +15,14 @@ services:
       image: postgres:13.0-alpine
       volumes:
         - $HOME/postgresql/data:/var/lib/postgresql/data/
-      environment:
-        - POSTGRES_USER=app
-        - POSTGRES_PASSWORD=123qwe
-        - POSTGRES_DB=movies_database
+        - ./postgree/init.sql:/docker-entrypoint-initdb.d/init.sql
       env_file:
-        - ./app/config/.env
+        - ./app/config/db.env
   nginx:
     image: nginx:1.19.2
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./configs:/etc/nginx/conf.d:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/configs:/etc/nginx/conf.d:ro
       - static_volume:/usr/src/app/staticfiles
     ports:
       - 80:80
